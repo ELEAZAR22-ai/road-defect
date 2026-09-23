@@ -104,6 +104,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <div>
             <p className="eyebrow">Collection overview</p>
             <h1>Review field submissions.</h1>
+            <p className="admin-title-summary">
+              Triage new road evidence, validate privacy processing, and keep
+              public maintenance records current.
+            </p>
           </div>
           <div className="admin-title-actions">
             <Link className="button secondary" href="/admin/archives">Archives</Link>
@@ -158,6 +162,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </div>
 
         <form className="filter-bar">
+          <div className="filter-heading">
+            <strong>Refine records</strong>
+            <span>Use one or more filters to focus the review queue.</span>
+          </div>
           <label>
             <span>Status</span>
             <select defaultValue={filters.status} name="status">
@@ -209,6 +217,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               <p className="eyebrow">Quality review</p>
               <h2>Submitted records</h2>
             </div>
+            <span>{submissions.length} record{submissions.length === 1 ? "" : "s"} in view</span>
           </div>
 
           <div className="submission-list">
@@ -284,7 +293,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     </div>
                   ) : null}
                   {submission.latitude !== null && submission.longitude !== null &&
-                  statusAllowsDirections(submission.workflow_status) ? (
+                    statusAllowsDirections(submission.workflow_status) ? (
                     <a
                       className="directions-button"
                       href={getDirectionsUrl(submission.latitude, submission.longitude)}

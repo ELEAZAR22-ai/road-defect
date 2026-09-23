@@ -18,6 +18,21 @@ const stages = [
   },
 ];
 
+const highlights = [
+  {
+    label: "Privacy-first",
+    detail: "Automatic blurring of people and vehicles before storage.",
+  },
+  {
+    label: "GPS-grounded",
+    detail: "Each accepted record includes precise location coordinates.",
+  },
+  {
+    label: "Human-verified",
+    detail: "AI suggestions are reviewed by administrators before publication.",
+  },
+];
+
 export default function Home() {
   return (
     <main>
@@ -84,6 +99,15 @@ export default function Home() {
             </span>
           </div>
         </div>
+      </section>
+
+      <section className="hero-highlights" aria-label="Platform highlights">
+        {highlights.map((item) => (
+          <article className="highlight-card" key={item.label}>
+            <p>{item.label}</p>
+            <span>{item.detail}</span>
+          </article>
+        ))}
       </section>
 
       <section className="process" id="process">

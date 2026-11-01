@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -11,15 +10,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function LandingPage() {
-  const router = useRouter();
-
-  // Login Modal State
+  // Modal & Install States
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Web PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
@@ -44,33 +36,9 @@ export default function LandingPage() {
     setDeferredPrompt(null);
   };
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setLoginError('');
-
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Invalid administration password.');
-      }
-
-      router.push('/admin');
-    } catch (err: any) {
-      setLoginError(err.message || 'Login failed. Please verify credentials.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="landing-root">
-      {/* Self-contained CSS embedded directly into the page */}
+      {/* Self-contained responsive styles */}
       <style dangerouslySetInnerHTML={{ __html: `
         .landing-root {
           min-height: 100vh;
@@ -338,16 +306,6 @@ export default function LandingPage() {
           border-color: #f59e0b;
         }
 
-        .error-message {
-          background: rgba(239, 68, 68, 0.15);
-          border: 1px solid #ef4444;
-          color: #fca5a5;
-          padding: 0.6rem 0.8rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          margin-bottom: 1.25rem;
-        }
-
         /* Institutional Footer */
         .page-footer {
           border-top: 1px solid #22304d;
@@ -411,7 +369,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="hero-subtext">
-          A mobile-friendly reporting and quality-review system connecting citizens and municipal engineers in Ga Central (Sowutuom, Santa Maria, Anyaa, and Ablekuma) to monitor road defects, ensure public privacy, and track maintenance lifecycles[cite: 2, 3].
+          A mobile-friendly reporting and quality-review system connecting citizens and municipal engineers in Ga Central (Sowutuom, Santa Maria, Anyaa, and Ablekuma) to monitor road defects, ensure public privacy, and track maintenance lifecycles[cite: 3, 4].
         </p>
 
         <div className="hero-actions">
@@ -440,7 +398,7 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        {/* Feature Highlights Grid */}
+        {/* Feature Cards Grid */}
         <div className="feature-grid">
           <div className="card">
             <div className="card-icon" style={{ color: '#10b981' }}>
@@ -463,7 +421,7 @@ export default function LandingPage() {
             </div>
             <h3 className="card-title">GPS &amp; Digital Addresses</h3>
             <p className="card-desc">
-              Captures high-precision device GPS coordinates, timestamps, and GhanaPostGPS digital addresses for rapid assembly engineer dispatch[cite: 2, 3].
+              Captures high-precision device GPS coordinates, timestamps, and GhanaPostGPS digital addresses for rapid assembly engineer dispatch[cite: 3, 4].
             </p>
           </div>
 
@@ -475,7 +433,7 @@ export default function LandingPage() {
             </div>
             <h3 className="card-title">Maintenance Lifecycles</h3>
             <p className="card-desc">
-              Follow repair progress through transparent before, in-progress, and after inspection photo timelines and verification stages[cite: 2].
+              Follow repair progress through transparent before, in-progress, and after inspection photo timelines and verification stages.
             </p>
           </div>
         </div>
@@ -486,7 +444,7 @@ export default function LandingPage() {
         <div className="modal-overlay">
           <div className="modal-box">
             <button 
-              onClick={() => { setShowLoginModal(false); setLoginError(''); }} 
+              onClick={() => setShowLoginModal(false)} 
               className="modal-close-btn"
               aria-label="Close modal"
             >
@@ -500,31 +458,29 @@ export default function LandingPage() {
               Officer Sign-In
             </h2>
             <p style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.5 }}>
-              Enter the Ga Central Municipal Assembly review key to manage queues, reviews, and repair lifecycles[cite: 2, 3].
+              Enter the Ga Central Municipal Assembly review key to manage queues, reviews, and repair lifecycles[cite: 3, 4].
             </p>
 
-            <form onSubmit={handleAdminLogin}>
+            {/* Standard native POST directly to the working /admin/login endpoint */}
+            <form action="/admin/login" method="POST">
               <div>
                 <label className="input-label">Administrator Password</label>
                 <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
                   placeholder="Enter administrator password"
                   required
+                  autoFocus
                   className="text-input"
                 />
               </div>
 
-              {loginError && <div className="error-message">{loginError}</div>}
-
               <button
                 type="submit"
-                disabled={isSubmitting}
                 className="btn btn-primary"
                 style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', fontSize: '0.95rem' }}
               >
-                {isSubmitting ? 'Authenticating...' : 'Sign In to Review Portal'}
+                Sign In to Review Portal
               </button>
             </form>
           </div>
@@ -533,9 +489,9 @@ export default function LandingPage() {
 
       {/* Collaboration Footer */}
       <footer className="page-footer">
-        Pentecost University &bull; Faculty of Engineering and Computing &bull; Department of Industrial Software Engineering[cite: 3]
+        Pentecost University &bull; Faculty of Engineering and Computing &bull; Department of Industrial Software Engineering[cite: 4]
         <br />
-        Project Supervisor: Mr. Harry Atieku-Boateng &bull; Ga Central Municipal Assembly (GCMA) Academic Pilot[cite: 3]
+        Project Supervisor: Mr. Harry Atieku-Boateng &bull; Ga Central Municipal Assembly (GCMA) Academic Pilot[cite: 4]
       </footer>
     </div>
   );

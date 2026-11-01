@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -10,7 +11,6 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function LandingPage() {
-  // Modal & Install States
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -38,7 +38,6 @@ export default function LandingPage() {
 
   return (
     <div className="landing-root">
-      {/* Self-contained responsive styles */}
       <style dangerouslySetInnerHTML={{ __html: `
         .landing-root {
           min-height: 100vh;
@@ -155,7 +154,7 @@ export default function LandingPage() {
         .hero-container {
           max-width: 1150px;
           margin: 0 auto;
-          padding: 4.5rem 1.5rem 3rem;
+          padding: 3.5rem 1.5rem 3rem;
           flex: 1;
         }
 
@@ -194,7 +193,7 @@ export default function LandingPage() {
           font-size: 1.15rem;
           color: #94a3b8;
           max-width: 760px;
-          margin-bottom: 2.25rem;
+          margin-bottom: 2rem;
           line-height: 1.6;
         }
 
@@ -202,7 +201,52 @@ export default function LandingPage() {
           display: flex;
           flex-wrap: wrap;
           gap: 1rem;
-          margin-bottom: 4.5rem;
+          margin-bottom: 3rem;
+        }
+
+        /* Road Path Showcase Card */
+        .road-showcase {
+          position: relative;
+          width: 100%;
+          height: 380px;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid #22304d;
+          margin-bottom: 4rem;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+          background-color: #131b2e;
+        }
+
+        .road-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          background: linear-gradient(180deg, rgba(9, 13, 22, 0.2) 0%, rgba(9, 13, 22, 0.85) 100%);
+          display: flex;
+          align-items: flex-end;
+          padding: 1.5rem;
+        }
+
+        .road-pill-badge {
+          background: rgba(19, 27, 46, 0.85);
+          backdrop-filter: blur(8px);
+          border: 1px solid #22304d;
+          padding: 0.6rem 1rem;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .road-pill-title {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .road-pill-sub {
+          font-size: 0.75rem;
+          color: #94a3b8;
         }
 
         /* Feature Card Grid */
@@ -244,7 +288,7 @@ export default function LandingPage() {
           line-height: 1.6;
         }
 
-        /* Officer Modal Overlay */
+        /* Modal Overlay */
         .modal-overlay {
           position: fixed;
           inset: 0;
@@ -398,6 +442,32 @@ export default function LandingPage() {
           </Link>
         </div>
 
+        {/* Road Path Visual Showcase */}
+        <div className="road-showcase">
+          <Image
+            src="/road-banner.jpg"
+            alt=""
+            fill
+            sizes="(max-width: 1150px) calc(100vw - 3rem), 1102px"
+            preload
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
+          />
+          <div className="road-overlay">
+            <div className="road-pill-badge">
+              <div style={{ color: '#f59e0b' }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 14 8 14s8-8.75 8-14a8 8 0 0 0-8-8z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </div>
+              <div>
+                <div className="road-pill-title">Ga Central Defect Inspection Corridor</div>
+                <div className="road-pill-sub">Automated GPS intake &bull; YOLOS Tiny Privacy Protection &bull; Verification Triage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Feature Cards Grid */}
         <div className="feature-grid">
           <div className="card">
@@ -408,7 +478,7 @@ export default function LandingPage() {
             </div>
             <h3 className="card-title">Privacy-By-Design Blurring</h3>
             <p className="card-desc">
-              Complies with Ghana Data Protection Act (Act 843). Automatically detects and blurs human faces, vehicle bodies, and license plates before storage.
+              Complies with Ghana Data Protection Act (Act 843). Automatically detects and blurs human faces, vehicle bodies, and license plates before storage[cite: 3].
             </p>
           </div>
 
@@ -433,7 +503,7 @@ export default function LandingPage() {
             </div>
             <h3 className="card-title">Maintenance Lifecycles</h3>
             <p className="card-desc">
-              Follow repair progress through transparent before, in-progress, and after inspection photo timelines and verification stages.
+              Follow repair progress through transparent before, in-progress, and after inspection photo timelines and verification stages[cite: 3].
             </p>
           </div>
         </div>
@@ -461,7 +531,6 @@ export default function LandingPage() {
               Enter the Ga Central Municipal Assembly review key to manage queues, reviews, and repair lifecycles[cite: 3, 4].
             </p>
 
-            {/* Standard native POST directly to the working /admin/login endpoint */}
             <form action="/admin/login" method="POST">
               <div>
                 <label className="input-label">Administrator Password</label>

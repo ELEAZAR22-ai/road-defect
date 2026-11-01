@@ -1,19 +1,9 @@
+// app/page.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
-  ShieldCheck, 
-  MapPin, 
-  Camera, 
-  LogIn, 
-  Download, 
-  Activity, 
-  Radio, 
-  AlertTriangle,
-  X
-} from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -22,7 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function LandingPage() {
   const router = useRouter();
-  
+
   // Login Modal State
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [password, setPassword] = useState('');
@@ -67,183 +57,485 @@ export default function LandingPage() {
       });
 
       if (!res.ok) {
-        throw new Error('Invalid administration password');
+        throw new Error('Invalid administration password.');
       }
 
       router.push('/admin');
-    } catch (error: unknown) {
-      setLoginError(error instanceof Error ? error.message : 'Login failed');
+    } catch (err: any) {
+      setLoginError(err.message || 'Login failed. Please verify credentials.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans">
-      {/* Global Navigation Header */}
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <span className="p-2 bg-amber-500/20 text-amber-400 rounded-lg">
-              <AlertTriangle className="w-5 h-5" />
-            </span>
-            <div>
-              <span className="font-bold text-lg tracking-tight">Road Defect Collector</span>
-              <span className="ml-2 text-xs text-slate-400 border border-slate-700 px-1.5 py-0.5 rounded">
-                Ga Central Municipal
-              </span>
-            </div>
+    <div className="landing-root">
+      {/* Self-contained CSS embedded directly into the page */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .landing-root {
+          min-height: 100vh;
+          background-color: #090d16;
+          color: #f1f5f9;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .landing-root * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        /* Navigation Header */
+        .site-header {
+          border-bottom: 1px solid #22304d;
+          background: rgba(9, 13, 22, 0.9);
+          backdrop-filter: blur(10px);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+          padding: 0.85rem 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .brand-group {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .brand-icon {
+          background: rgba(245, 158, 11, 0.15);
+          color: #f59e0b;
+          padding: 0.5rem;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .brand-title {
+          font-weight: 700;
+          font-size: 1.1rem;
+          letter-spacing: -0.01em;
+          color: #ffffff;
+        }
+
+        .brand-badge {
+          font-size: 0.75rem;
+          color: #94a3b8;
+          border: 1px solid #22304d;
+          padding: 0.15rem 0.5rem;
+          border-radius: 4px;
+          margin-left: 0.5rem;
+          background: #131b2e;
+        }
+
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        /* Buttons */
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          padding: 0.55rem 1rem;
+          border-radius: 7px;
+          cursor: pointer;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          border: none;
+        }
+
+        .btn-primary {
+          background: #f59e0b;
+          color: #090d16;
+        }
+        .btn-primary:hover {
+          background: #d97706;
+          box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+          background: #131b2e;
+          color: #e2e8f0;
+          border: 1px solid #22304d;
+        }
+        .btn-secondary:hover {
+          background: #1a253f;
+          border-color: #3b507d;
+        }
+
+        .btn-install {
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
+          border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+        .btn-install:hover {
+          background: rgba(16, 185, 129, 0.25);
+        }
+
+        /* Hero Container */
+        .hero-container {
+          max-width: 1150px;
+          margin: 0 auto;
+          padding: 4.5rem 1.5rem 3rem;
+          flex: 1;
+        }
+
+        .badge-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: rgba(245, 158, 11, 0.1);
+          color: #f59e0b;
+          border: 1px solid rgba(245, 158, 11, 0.25);
+          padding: 0.3rem 0.85rem;
+          border-radius: 9999px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+        }
+
+        .pulse-indicator {
+          width: 8px;
+          height: 8px;
+          background: #f59e0b;
+          border-radius: 50%;
+          box-shadow: 0 0 8px #f59e0b;
+        }
+
+        .hero-headline {
+          font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+          font-weight: 800;
+          line-height: 1.15;
+          margin-bottom: 1.25rem;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+        }
+
+        .hero-subtext {
+          font-size: 1.15rem;
+          color: #94a3b8;
+          max-width: 760px;
+          margin-bottom: 2.25rem;
+          line-height: 1.6;
+        }
+
+        .hero-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-bottom: 4.5rem;
+        }
+
+        /* Feature Card Grid */
+        .feature-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 1.5rem;
+          border-top: 1px solid #22304d;
+          padding-top: 3.5rem;
+        }
+
+        .card {
+          background: #131b2e;
+          border: 1px solid #22304d;
+          border-radius: 12px;
+          padding: 1.75rem;
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .card:hover {
+          transform: translateY(-3px);
+          border-color: #3b507d;
+        }
+
+        .card-icon {
+          display: inline-block;
+          margin-bottom: 1rem;
+        }
+
+        .card-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 0.5rem;
+        }
+
+        .card-desc {
+          font-size: 0.925rem;
+          color: #94a3b8;
+          line-height: 1.6;
+        }
+
+        /* Officer Modal Overlay */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(4, 7, 14, 0.8);
+          backdrop-filter: blur(5px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 100;
+          padding: 1.25rem;
+        }
+
+        .modal-box {
+          background: #131b2e;
+          border: 1px solid #22304d;
+          border-radius: 14px;
+          width: 100%;
+          max-width: 430px;
+          padding: 2rem;
+          position: relative;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-close-btn {
+          position: absolute;
+          top: 1.25rem;
+          right: 1.25rem;
+          background: transparent;
+          border: none;
+          color: #94a3b8;
+          cursor: pointer;
+        }
+        .modal-close-btn:hover {
+          color: #ffffff;
+        }
+
+        .input-label {
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          color: #94a3b8;
+          margin-bottom: 0.4rem;
+        }
+
+        .text-input {
+          width: 100%;
+          padding: 0.75rem 0.9rem;
+          background: #090d16;
+          border: 1px solid #22304d;
+          border-radius: 7px;
+          color: #f1f5f9;
+          font-size: 0.95rem;
+          outline: none;
+          margin-bottom: 1.25rem;
+        }
+        .text-input:focus {
+          border-color: #f59e0b;
+        }
+
+        .error-message {
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid #ef4444;
+          color: #fca5a5;
+          padding: 0.6rem 0.8rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          margin-bottom: 1.25rem;
+        }
+
+        /* Institutional Footer */
+        .page-footer {
+          border-top: 1px solid #22304d;
+          padding: 2.25rem 1.5rem;
+          text-align: center;
+          font-size: 0.825rem;
+          color: #64748b;
+          line-height: 1.7;
+          background: #060910;
+        }
+      `}} />
+
+      {/* Top Header */}
+      <header className="site-header">
+        <div className="brand-group">
+          <div className="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
           </div>
+          <div>
+            <span className="brand-title">Road Defect Collector</span>
+            <span className="brand-badge">Ga Central Municipal</span>
+          </div>
+        </div>
 
-          <div className="flex items-center space-x-3">
-            {isInstallable && (
-              <button
-                onClick={handleInstallClick}
-                className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-md transition shadow-sm"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Install Web App</span>
-              </button>
-            )}
-
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="flex items-center space-x-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md transition border border-slate-700"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span>Officer Portal</span>
+        <div className="header-actions">
+          {isInstallable && (
+            <button onClick={handleInstallClick} className="btn btn-install">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Install Web App</span>
             </button>
-          </div>
+          )}
+
+          <button onClick={() => setShowLoginModal(true)} className="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            <span>Officer Portal</span>
+          </button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 py-12 flex flex-col justify-center">
-        <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center space-x-2 bg-amber-500/10 text-amber-400 text-xs px-3 py-1 rounded-full mb-4 font-medium border border-amber-500/20">
-            <Radio className="w-3 h-3 animate-pulse" />
-            <span>Civic Infrastructure Pilot Project</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-4">
-            Monitoring Road Infrastructure in Ga Central Municipality
-          </h1>
-          <p className="text-base md:text-lg text-slate-400 leading-relaxed mb-6">
-            An automated, privacy-first platform connecting citizens and municipal engineers to document, verify, and resolve road defects across Sowutuom, Santa Maria, Anyaa, and surrounding areas.
-          </p>
-
-          <div className="flex flex-wrap gap-4">
-            <Link
-              href="/collect"
-              className="flex items-center space-x-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-amber-500/20 transition"
-            >
-              <Camera className="w-5 h-5" />
-              <span>Report a Road Defect</span>
-            </Link>
-
-            <Link
-              href="/reports"
-              className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-6 py-3 rounded-lg transition"
-            >
-              <MapPin className="w-5 h-5" />
-              <span>Public Tracking Map</span>
-            </Link>
-
-            <Link
-              href="/drone"
-              className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-6 py-3 rounded-lg transition"
-            >
-              <Activity className="w-5 h-5" />
-              <span>Drone AI Pilot</span>
-            </Link>
-          </div>
+      <main className="hero-container">
+        <div className="badge-tag">
+          <span className="pulse-indicator"></span>
+          <span>Municipal Urban Roads Partnership</span>
         </div>
 
-        {/* Operational Highlights */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-800">
-          <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
-            <ShieldCheck className="w-6 h-6 text-emerald-400 mb-3" />
-            <h3 className="font-bold text-white mb-1">On-Device Privacy Blurring</h3>
-            <p className="text-sm text-slate-400">
-              Complies with Ghana Data Protection Act (Act 843). Automatically obscures faces and vehicle license plates before images leave your device.
+        <h1 className="hero-headline">
+          Monitoring Road Infrastructure in Ga Central Municipality
+        </h1>
+
+        <p className="hero-subtext">
+          A mobile-friendly reporting and quality-review system connecting citizens and municipal engineers in Ga Central (Sowutuom, Santa Maria, Anyaa, and Ablekuma) to monitor road defects, ensure public privacy, and track maintenance lifecycles[cite: 2, 3].
+        </p>
+
+        <div className="hero-actions">
+          <Link href="/collect" className="btn btn-primary" style={{ padding: '0.85rem 1.75rem', fontSize: '1rem' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <span>Report Road Defect</span>
+          </Link>
+
+          <Link href="/reports" className="btn btn-secondary" style={{ padding: '0.85rem 1.75rem', fontSize: '1rem' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+            <span>Public Tracking Map</span>
+          </Link>
+
+          <Link href="/drone" className="btn btn-secondary" style={{ padding: '0.85rem 1.75rem', fontSize: '1rem' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <span>Drone AI Pilot</span>
+          </Link>
+        </div>
+
+        {/* Feature Highlights Grid */}
+        <div className="feature-grid">
+          <div className="card">
+            <div className="card-icon" style={{ color: '#10b981' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 className="card-title">Privacy-By-Design Blurring</h3>
+            <p className="card-desc">
+              Complies with Ghana Data Protection Act (Act 843). Automatically detects and blurs human faces, vehicle bodies, and license plates before storage.
             </p>
           </div>
 
-          <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
-            <MapPin className="w-6 h-6 text-amber-400 mb-3" />
-            <h3 className="font-bold text-white mb-1">Precise GPS & Digital Address</h3>
-            <p className="text-sm text-slate-400">
-              Captures high-accuracy coordinates and supports GhanaPostGPS digital addresses for rapid assembly engineer dispatch.
+          <div className="card">
+            <div className="card-icon" style={{ color: '#f59e0b' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="10" r="3"/>
+                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 14 8 14s8-8.75 8-14a8 8 0 0 0-8-8z"/>
+              </svg>
+            </div>
+            <h3 className="card-title">GPS &amp; Digital Addresses</h3>
+            <p className="card-desc">
+              Captures high-precision device GPS coordinates, timestamps, and GhanaPostGPS digital addresses for rapid assembly engineer dispatch[cite: 2, 3].
             </p>
           </div>
 
-          <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
-            <Activity className="w-6 h-6 text-sky-400 mb-3" />
-            <h3 className="font-bold text-white mb-1">Transparent Maintenance Tracking</h3>
-            <p className="text-sm text-slate-400">
-              Tracks the full repair lifecycle with before, in-progress, and after inspection photo timelines.
+          <div className="card">
+            <div className="card-icon" style={{ color: '#38bdf8' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <h3 className="card-title">Maintenance Lifecycles</h3>
+            <p className="card-desc">
+              Follow repair progress through transparent before, in-progress, and after inspection photo timelines and verification stages[cite: 2].
             </p>
           </div>
         </div>
       </main>
 
-      {/* Integrated Municipal Administrator Login Modal */}
+      {/* Municipal Officer Login Modal */}
       {showLoginModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl w-full max-w-md p-6 relative shadow-2xl">
-            <button
-              onClick={() => {
-                setShowLoginModal(false);
-                setLoginError('');
-              }}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <button 
+              onClick={() => { setShowLoginModal(false); setLoginError(''); }} 
+              className="modal-close-btn"
+              aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
 
-            <div className="flex items-center space-x-2 mb-2">
-              <ShieldCheck className="w-5 h-5 text-amber-400" />
-              <h2 className="text-lg font-bold text-white">GCMA Officer Sign-in</h2>
-            </div>
-            <p className="text-xs text-slate-400 mb-6">
-              Enter your municipal supervisor key to access triage queues, reviews, and maintenance tracking.
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.4rem', color: '#ffffff' }}>
+              Officer Sign-In
+            </h2>
+            <p style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+              Enter the Ga Central Municipal Assembly review key to manage queues, reviews, and repair lifecycles[cite: 2, 3].
             </p>
 
-            <form onSubmit={handleAdminLogin} className="space-y-4">
+            <form onSubmit={handleAdminLogin}>
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">
-                  Access Key / Password
-                </label>
+                <label className="input-label">Administrator Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter administrator password"
                   required
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-amber-400"
+                  className="text-input"
                 />
               </div>
 
-              {loginError && (
-                <div className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800 px-3 py-2 rounded-md">
-                  {loginError}
-                </div>
-              )}
+              {loginError && <div className="error-message">{loginError}</div>}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-sm transition disabled:opacity-50"
+                className="btn btn-primary"
+                style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', fontSize: '0.95rem' }}
               >
-                {isSubmitting ? 'Verifying...' : 'Sign In to Review Portal'}
+                {isSubmitting ? 'Authenticating...' : 'Sign In to Review Portal'}
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        Pentecost University — Dept. of Industrial Software Engineering &bull; Ga Central Municipal Assembly Partnership
+      {/* Collaboration Footer */}
+      <footer className="page-footer">
+        Pentecost University &bull; Faculty of Engineering and Computing &bull; Department of Industrial Software Engineering[cite: 3]
+        <br />
+        Project Supervisor: Mr. Harry Atieku-Boateng &bull; Ga Central Municipal Assembly (GCMA) Academic Pilot[cite: 3]
       </footer>
     </div>
   );

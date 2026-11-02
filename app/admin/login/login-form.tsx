@@ -13,16 +13,20 @@ export default function LoginForm() {
       <label className="field">
         <span>Administrator password</span>
         <input
+          aria-describedby={state.error ? "admin-login-error" : undefined}
+          aria-invalid={state.error ? true : undefined}
           autoComplete="current-password"
           name="password"
-          placeholder="Enter password"
+          placeholder="Enter administrator password"
           required
           type="password"
         />
       </label>
-      <p className="field-error" role="alert">
-        {state.error}
-      </p>
+      {state.error && (
+        <p className="field-error" id="admin-login-error" role="alert">
+          {state.error}
+        </p>
+      )}
       <button className="submit-button" disabled={pending} type="submit">
         {pending ? "Signing in…" : "Sign in"}
       </button>

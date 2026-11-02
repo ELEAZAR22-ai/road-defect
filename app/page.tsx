@@ -11,7 +11,6 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function LandingPage() {
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
@@ -208,8 +207,8 @@ export default function LandingPage() {
         .road-showcase {
           position: relative;
           width: 100%;
-          height: 380px;
-          border-radius: 16px;
+          height: clamp(300px, 35vw, 420px);
+          border-radius: 20px;
           overflow: hidden;
           border: 1px solid #22304d;
           margin-bottom: 4rem;
@@ -221,7 +220,7 @@ export default function LandingPage() {
           position: absolute;
           inset: 0;
           z-index: 1;
-          background: linear-gradient(180deg, rgba(9, 13, 22, 0.2) 0%, rgba(9, 13, 22, 0.85) 100%);
+          background: linear-gradient(90deg, rgba(9, 13, 22, 0.08) 30%, rgba(9, 13, 22, 0.28) 100%), linear-gradient(180deg, rgba(9, 13, 22, 0.04) 20%, rgba(9, 13, 22, 0.82) 100%);
           display: flex;
           align-items: flex-end;
           padding: 1.5rem;
@@ -233,6 +232,7 @@ export default function LandingPage() {
           border: 1px solid #22304d;
           padding: 0.6rem 1rem;
           border-radius: 10px;
+          max-width: 100%;
           display: flex;
           align-items: center;
           gap: 0.75rem;
@@ -247,6 +247,28 @@ export default function LandingPage() {
         .road-pill-sub {
           font-size: 0.75rem;
           color: #94a3b8;
+          line-height: 1.5;
+        }
+
+        @media (max-width: 640px) {
+          .road-showcase {
+            height: clamp(250px, 72vw, 330px);
+            border-radius: 14px;
+          }
+
+          .road-overlay {
+            padding: 1rem;
+          }
+
+          .road-pill-badge {
+            align-items: flex-start;
+            gap: 0.6rem;
+            padding: 0.75rem;
+          }
+
+          .road-pill-sub {
+            font-size: 0.68rem;
+          }
         }
 
         /* Feature Card Grid */
@@ -286,68 +308,6 @@ export default function LandingPage() {
           font-size: 0.925rem;
           color: #94a3b8;
           line-height: 1.6;
-        }
-
-        /* Modal Overlay */
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(4, 7, 14, 0.8);
-          backdrop-filter: blur(5px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 100;
-          padding: 1.25rem;
-        }
-
-        .modal-box {
-          background: #131b2e;
-          border: 1px solid #22304d;
-          border-radius: 14px;
-          width: 100%;
-          max-width: 430px;
-          padding: 2rem;
-          position: relative;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-        }
-
-        .modal-close-btn {
-          position: absolute;
-          top: 1.25rem;
-          right: 1.25rem;
-          background: transparent;
-          border: none;
-          color: #94a3b8;
-          cursor: pointer;
-        }
-        .modal-close-btn:hover {
-          color: #ffffff;
-        }
-
-        .input-label {
-          display: block;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          color: #94a3b8;
-          margin-bottom: 0.4rem;
-        }
-
-        .text-input {
-          width: 100%;
-          padding: 0.75rem 0.9rem;
-          background: #090d16;
-          border: 1px solid #22304d;
-          border-radius: 7px;
-          color: #f1f5f9;
-          font-size: 0.95rem;
-          outline: none;
-          margin-bottom: 1.25rem;
-        }
-        .text-input:focus {
-          border-color: #f59e0b;
         }
 
         /* Institutional Footer */
@@ -390,14 +350,14 @@ export default function LandingPage() {
             </button>
           )}
 
-          <button onClick={() => setShowLoginModal(true)} className="btn btn-secondary">
+          <Link href="/admin/login" className="btn btn-secondary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
               <polyline points="10 17 15 12 10 7"/>
               <line x1="15" y1="12" x2="3" y2="12"/>
             </svg>
             <span>Officer Portal</span>
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -446,10 +406,11 @@ export default function LandingPage() {
         <div className="road-showcase">
           <Image
             src="/road-banner.jpg"
-            alt=""
+            alt="A pothole-damaged road in Ga Central Municipality"
             fill
             sizes="(max-width: 1150px) calc(100vw - 3rem), 1102px"
             preload
+            unoptimized
             style={{ objectFit: 'cover', objectPosition: 'center' }}
           />
           <div className="road-overlay">
@@ -508,53 +469,6 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
-
-      {/* Municipal Officer Login Modal */}
-      {showLoginModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <button 
-              onClick={() => setShowLoginModal(false)} 
-              className="modal-close-btn"
-              aria-label="Close modal"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.4rem', color: '#ffffff' }}>
-              Officer Sign-In
-            </h2>
-            <p style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.5 }}>
-              Enter the Ga Central Municipal Assembly review key to manage queues, reviews, and repair lifecycles[cite: 3, 4].
-            </p>
-
-            <form action="/admin/login" method="POST">
-              <div>
-                <label className="input-label">Administrator Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Enter administrator password"
-                  required
-                  autoFocus
-                  className="text-input"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', fontSize: '0.95rem' }}
-              >
-                Sign In to Review Portal
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Collaboration Footer */}
       <footer className="page-footer">
